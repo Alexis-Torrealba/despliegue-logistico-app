@@ -41,6 +41,10 @@ export default function ParishTable({ zoneFilter, setZoneFilter }) {
     <div id="detalle" className="card">
       <h2>Desglose completo — 26 parroquias</h2>
       <div className="desc">Filtra por zona o busca una parroquia; ordena por columna</div>
+      <div className="zero-legend">
+        <span className="sw"></span>
+        Zona Cero: parroquias con mayor devastación tras el doblete sísmico
+      </div>
 
       <div className="tabs">
         {["Todas", ...Object.keys(ZONE_COLORS)].map((z) => (
@@ -79,8 +83,11 @@ export default function ParishTable({ zoneFilter, setZoneFilter }) {
           </thead>
           <tbody>
             {filtered.map((p) => (
-              <tr key={p.name}>
-                <td>{p.name}</td>
+              <tr key={p.name} className={p.zeroZone ? "zero-row" : ""}>
+                <td>
+                  {p.name}
+                  {p.zeroZone && <span className="zero-tag">Zona Cero</span>}
+                </td>
                 <td>
                   <span
                     className="zone-pill"
@@ -100,7 +107,7 @@ export default function ParishTable({ zoneFilter, setZoneFilter }) {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan="4" style={{ textAlign: "center", color: "#8b93ab", padding: "20px 0" }}>
+                <td colSpan="4" className="empty-row">
                   Sin resultados
                 </td>
               </tr>

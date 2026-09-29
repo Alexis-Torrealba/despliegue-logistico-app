@@ -1,4 +1,3 @@
-import caritasLogo from "../assets/caritas-logo.png";
 import { TOTAL_TONS, TOTAL_VEHICLES, ZONES } from "../data/parishes.js";
 import { fmt } from "../utils/format.js";
 
@@ -7,18 +6,6 @@ export default function Header({ zoneFilter, setZoneFilter }) {
     <>
       <header className="top">
         <div>
-          <div className="brand">
-            <div className="logo-badge">
-              <img src={caritasLogo} alt="Logo Cáritas La Guaira" />
-            </div>
-            <div className="brand-text">
-              <div className="org">
-                Cáritas
-                <br />
-                <small>PASTORAL SOCIAL · LA GUAIRA</small>
-              </div>
-            </div>
-          </div>
           <div className="eyebrow">
             <span className="dot"></span>La Guaira · Respuesta Humanitaria
           </div>
@@ -33,19 +20,19 @@ export default function Header({ zoneFilter, setZoneFilter }) {
           </p>
         </div>
         <div className="kpis">
-          <div className="kpi c-cyan">
+          <div className="kpi accent">
             <div className="val">{fmt(TOTAL_TONS)} t</div>
             <div className="lbl">Volumen total</div>
           </div>
-          <div className="kpi c-amber">
+          <div className="kpi">
             <div className="val">26</div>
             <div className="lbl">Parroquias</div>
           </div>
-          <div className="kpi c-magenta">
+          <div className="kpi">
             <div className="val">{TOTAL_VEHICLES}</div>
             <div className="lbl">Vehículos</div>
           </div>
-          <div className="kpi c-violet">
+          <div className="kpi">
             <div className="val">100%</div>
             <div className="lbl">Cobertura</div>
           </div>
@@ -70,7 +57,7 @@ export default function Header({ zoneFilter, setZoneFilter }) {
           >
             <span
               className="d"
-              style={{ background: zoneFilter === z.name ? "rgba(10,14,23,0.55)" : z.color }}
+              style={{ background: zoneFilter === z.name ? "rgba(255,255,255,0.75)" : z.color }}
             ></span>
             {z.name}
           </a>

@@ -23,7 +23,7 @@ export default function DonorsCard() {
             <div className="item" key={d.name}>
               <span className="sw" style={{ background: DONOR_COLORS[i] }}></span>
               <span className="name">
-                {d.name} <span style={{ color: "#8b93ab" }}>· {d.note}</span>
+                {d.name} <span className="note">· {d.note}</span>
               </span>
               <span className="num">{fmt(d.tons)} t</span>
             </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SiteHeader from "./components/SiteHeader.jsx";
 import Header from "./components/Header.jsx";
 import ZoneDistributionCard from "./components/ZoneDistributionCard.jsx";
 import DonorsCard from "./components/DonorsCard.jsx";
@@ -10,19 +11,23 @@ export default function App() {
   const [zoneFilter, setZoneFilter] = useState("Todas");
 
   return (
-    <div className="wrap">
-      <Header zoneFilter={zoneFilter} setZoneFilter={setZoneFilter} />
+    <>
+      <SiteHeader />
 
-      <div id="resumen" className="grid">
-        <ZoneDistributionCard />
-        <DonorsCard />
-      </div>
+      <main className="wrap">
+        <Header zoneFilter={zoneFilter} setZoneFilter={setZoneFilter} />
 
-      <TopParishesCard />
+        <div id="resumen" className="grid">
+          <ZoneDistributionCard />
+          <DonorsCard />
+        </div>
 
-      <ParishTable zoneFilter={zoneFilter} setZoneFilter={setZoneFilter} />
+        <TopParishesCard />
+
+        <ParishTable zoneFilter={zoneFilter} setZoneFilter={setZoneFilter} />
+      </main>
 
       <Footer />
-    </div>
+    </>
   );
 }

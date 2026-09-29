@@ -18,7 +18,7 @@ export default function Doughnut({ labels, data, colors, centerLabel, centerValu
           {
             data,
             backgroundColor: colors,
-            borderColor: "#131a2b",
+            borderColor: "#1d1916",
             borderWidth: 3,
             hoverOffset: 8,
           },
@@ -31,11 +31,11 @@ export default function Doughnut({ labels, data, colors, centerLabel, centerValu
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: "#0f1420",
-            borderColor: "#232d45",
+            backgroundColor: "#0b0a09",
+            borderColor: "#3a322c",
             borderWidth: 1,
-            titleColor: "#eef1f8",
-            bodyColor: "#c3c9db",
+            titleColor: "#fff",
+            bodyColor: "#e3e0d9",
             padding: 10,
             callbacks: {
               label: (c) => ` ${c.label}: ${fmt(c.parsed)} t`,
