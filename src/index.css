@@ -109,6 +109,13 @@
     touch-action: none;
   }
 }
+/* Con el mapa ampliado, el fondo se arrastra con el mouse */
+.map-frame.zoomed .map-svg svg {
+  cursor: grab;
+}
+.map-frame.zoomed .map-svg svg:active {
+  cursor: grabbing;
+}
 /* En pantallas táctiles no hay hover: el toque abre el modal directamente */
 @media (hover: none) {
   .map-tip {
@@ -150,6 +157,14 @@
    así quedan en ~1px como en los otros mapas por zona */
 .map-svg #est-parroquias {
   stroke-width: 0.46;
+}
+/* Aeropuerto y puerto en Zona Centro: más pequeños y sutiles, encogidos desde la punta
+   del pin para que sigan señalando el mismo sitio */
+.map-svg [id^="ctr-pin-"] {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  scale: 0.65;
+  opacity: 0.8;
 }
 /* La original pierde su borde mientras la copia ampliada está encima */
 .map-svg .parroquia.map-hovered {

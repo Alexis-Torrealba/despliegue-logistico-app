@@ -83,6 +83,27 @@ function fitViewBox(svg) {
   return { x: x0 - pad, y: y0 - pad, w, h };
 }
 
+// Puntos azules y cuadros rojos más pequeños, encogidos desde su centro. Se cambian sus
+// atributos y no con CSS, porque los puntos traen un rotate() que el CSS descentraría
+const MARKER_SCALE = 0.6;
+
+function shrinkMarkers(svg) {
+  svg.querySelectorAll(".marcador:not([data-encogido])").forEach((m) => {
+    const k = MARKER_SCALE;
+    if (m.tagName === "ellipse") {
+      m.setAttribute("rx", m.rx.baseVal.value * k);
+      m.setAttribute("ry", m.ry.baseVal.value * k);
+    } else if (m.tagName === "rect") {
+      const { x, y, width: w, height: h } = m.getBBox();
+      m.setAttribute("x", x + (w * (1 - k)) / 2);
+      m.setAttribute("y", y + (h * (1 - k)) / 2);
+      m.setAttribute("width", w * k);
+      m.setAttribute("height", h * k);
+    }
+    m.dataset.encogido = ""; // en StrictMode el efecto corre dos veces sobre el mismo SVG
+  });
+}
+
 const MAX_ZOOM = 6;
 
 const ZOOM_BUTTON =
@@ -161,8 +182,9 @@ function attachPanZoom(svg, base, onZoomChange) {
   };
   svg.addEventListener("pointerdown", onDown);
   svg.addEventListener("pointermove", onMove);
-  svg.addEventListener("pointerup", onUp);
-  svg.addEventListener("pointercancel", onUp);
+  // en window: con el mouse se puede soltar el botón fuera del mapa
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
 
   const center = () => ({ x: view.x + view.w / 2, y: view.y + view.h / 2 });
   return {
@@ -176,8 +198,8 @@ function attachPanZoom(svg, base, onZoomChange) {
     destroy: () => {
       svg.removeEventListener("pointerdown", onDown);
       svg.removeEventListener("pointermove", onMove);
-      svg.removeEventListener("pointerup", onUp);
-      svg.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
     },
   };
 }
@@ -192,12 +214,16 @@ export default function MapCard() {
   const [chips, setChips] = useState([]);
   const closeModal = useCallback(() => setSelected(null), []);
   const map = MAPS.find((m) => m.label === active);
+  // En escritorio el zoom solo hace falta en el mapa completo, donde las parroquias
+  // del litoral quedan muy pequeñas; en móvil está en todos los mapas
+  const desktopZoom = active === MAPS[0].label;
 
   useEffect(() => {
     const root = mapRef.current;
     const tip = tipRef.current;
     const svg = root.querySelector("svg");
     const group = root.querySelector('[id$="-parroquias"]');
+    shrinkMarkers(svg);
     const panZoom = attachPanZoom(svg, fitViewBox(svg), setZoomed);
     panZoomRef.current = panZoom;
     setZoomed(false);
@@ -310,6 +336,7 @@ export default function MapCard() {
         <>
           <span className="mobile:hidden">
             Pasa el cursor sobre una parroquia y haz clic para ver las toneladas recibidas
+            {desktopZoom && ". Usa + para acercar y arrastra para moverte"}
           </span>
           <span className="hidden mobile:inline">
             Toca una parroquia para ver sus toneladas. Pellizca o usa + para acercar y arrastra para
@@ -336,7 +363,7 @@ export default function MapCard() {
       <div className="overflow-x-auto rounded-xl border border-line bg-panel-2">
         {/* map-frame, zoomed, map-svg y map-tip son ganchos para los estilos del SVG en index.css */}
         <div
-          className={`map-frame relative min-w-[640px] mobile:min-w-0 ${zoomed ? "zoomed" : ""}`}
+          className={`map-frame relative min-w-[640px] select-none mobile:min-w-0 ${zoomed ? "zoomed" : ""}`}
         >
           <div
             key={active}
@@ -348,7 +375,7 @@ export default function MapCard() {
         </div>
       </div>
       <div
-        className="mt-2 hidden justify-end gap-1.5 mobile:flex"
+        className={`mt-2 justify-end gap-1.5 ${desktopZoom ? "flex" : "hidden mobile:flex"}`}
         role="group"
         aria-label="Zoom del mapa"
       >
