@@ -1,5 +1,6 @@
 import Doughnut from "./Doughnut.jsx";
-import { TOTAL_TONS, TOTAL_VEHICLES, ZONES } from "../data/parishes.js";
+import { FLEET_SOURCES, TOTAL_TONS, TOTAL_VEHICLES, ZONES } from "../data/parishes.js";
+import TruckIcon from "./TruckIcon.jsx";
 import { fmt } from "../utils/format.js";
 
 export default function ZoneDistributionCard() {
@@ -35,6 +36,15 @@ export default function ZoneDistributionCard() {
           <b>{TOTAL_VEHICLES}</b> vehículos desplegados
         </span>
       </div>
+      <ul className="fleet-list">
+        {FLEET_SOURCES.map((f) => (
+          <li key={f.label}>
+            <TruckIcon variant={f.icon} />
+            <b>{f.count}</b>
+            <span>{f.label}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

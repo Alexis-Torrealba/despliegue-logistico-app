@@ -5,3 +5,6 @@ dist
 
 # Documentos de origen de datos
 Datos.docx
+
+# Archivos temporales de Office mientras un documento está abierto
+~$*

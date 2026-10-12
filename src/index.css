@@ -14,6 +14,7 @@
   --text-dim: #b3a99d;
   --sans: "Segoe UI", system-ui, Roboto, sans-serif;
   --serif: Georgia, "Times New Roman", serif;
+  --map-highlight: #2f80ed;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -382,6 +383,7 @@ h1 {
   flex-wrap: wrap;
 }
 .tab {
+  font-family: inherit;
   background: var(--panel-2);
   border: 1px solid var(--border);
   color: var(--text-dim);
@@ -566,6 +568,31 @@ tbody tr.zero-row:hover {
   background: var(--border);
   border-radius: 3px;
 }
+tbody tr.parish-row {
+  cursor: pointer;
+}
+tbody tr.parish-row:focus-visible {
+  outline: 2px solid var(--red-soft);
+  outline-offset: -2px;
+}
+.truck-icon {
+  width: 17px;
+  height: 17px;
+  margin-left: 7px;
+  vertical-align: -3px;
+  color: var(--white);
+}
+/* En móvil la tabla queda en Parroquia y Toneladas, sin scroll horizontal;
+   las filas de Zona Cero se distinguen solo por el sombreado */
+@media (max-width: 600px) {
+  .col-desktop,
+  tbody .zero-tag {
+    display: none;
+  }
+  tbody td.num-cell {
+    white-space: nowrap;
+  }
+}
 .empty-row {
   text-align: center;
   color: var(--text-dim);
@@ -584,6 +611,34 @@ tbody tr.zero-row:hover {
 }
 .foot-total b {
   color: var(--text);
+}
+.fleet-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+.fleet-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fleet-list .truck-icon {
+  width: 26px;
+  height: 18px;
+  margin-left: 0;
+  vertical-align: 0;
+  flex-shrink: 0;
+}
+.fleet-list b {
+  min-width: 2.6em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 /* Pie del sitio */
@@ -664,4 +719,276 @@ tbody tr.zero-row:hover {
   margin: 0;
   padding-top: 1.25rem;
   font-size: 0.8rem;
+}
+
+/* ---------- Mapa interactivo ---------- */
+.map-scroll {
+  overflow-x: auto;
+  border-radius: 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+}
+.map-frame {
+  position: relative;
+  min-width: 640px;
+}
+.map-svg {
+  padding: 12px;
+}
+/* Mismo marco para todos los mapas; cada uno se centra dentro */
+.map-svg svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 1;
+}
+.map-svg .parroquia:focus {
+  outline: none;
+}
+.map-desc-mobile,
+.map-zoom,
+.map-chips {
+  display: none;
+}
+.map-zoom {
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+.map-zoom button {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(18, 16, 14, 0.85);
+  color: var(--text);
+  font: 600 20px/1 var(--sans);
+  cursor: pointer;
+}
+.map-zoom button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.map-chips {
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.map-chip {
+  font: 600 12.5px var(--sans);
+  padding: 7px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--panel-2);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+.map-chip:active {
+  color: var(--white);
+  border-color: var(--red);
+  background: var(--red);
+}
+/* En móvil el mapa cabe en el ancho de la pantalla, sin scroll horizontal, en un marco
+   más alto para poder acercarlo: pellizco o botones para zoom y un dedo para moverlo */
+@media (max-width: 600px) {
+  .map-frame {
+    min-width: 0;
+  }
+  .map-svg {
+    padding: 6px;
+  }
+  .map-svg svg {
+    aspect-ratio: 2 / 1;
+    touch-action: pan-y;
+  }
+  .map-frame.zoomed .map-svg svg {
+    touch-action: none;
+  }
+  .map-zoom,
+  .map-chips {
+    display: flex;
+  }
+  .map-desc-desktop {
+    display: none;
+  }
+  .map-desc-mobile {
+    display: inline;
+  }
+}
+/* En pantallas táctiles no hay hover: el toque abre el modal directamente */
+@media (hover: none) {
+  .map-tip {
+    display: none;
+  }
+}
+/* Los nombres de parroquia salen en el tooltip, no fijos en el mapa */
+.map-svg .etiqueta[data-parroquia],
+.map-svg .titulo,
+.map-svg [id$="-fondo-titulo"] {
+  display: none;
+}
+.map-svg .etiqueta text {
+  fill: var(--text-dim);
+}
+.map-tip {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--black);
+  border: 1px solid var(--map-highlight);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translate(-50%, calc(-100% - 14px));
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.map-tip.below {
+  transform: translate(-50%, 18px);
+}
+.map-tip.visible {
+  opacity: 1;
+}
+/* El SVG de Zona Este es más pequeño y sus divisiones se veían el doble de gruesas;
+   así quedan en ~1px como en los otros mapas por zona */
+.map-svg #est-parroquias {
+  stroke-width: 0.46;
+}
+/* La original pierde su borde mientras la copia ampliada está encima */
+.map-svg .parroquia.map-hovered {
+  stroke: transparent;
+}
+.map-svg .map-highlight {
+  pointer-events: none;
+  opacity: 0;
+  stroke: var(--map-highlight);
+  paint-order: stroke;
+}
+.map-svg .map-highlight.visible {
+  opacity: 1;
+  animation: map-zoom 0.22s ease-out forwards;
+}
+@keyframes map-zoom {
+  from {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  to {
+    transform: scale(var(--map-scale, 1.07));
+    filter: brightness(1.12) drop-shadow(0 0 var(--map-glow, 14px) var(--map-highlight));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .map-svg .map-highlight.visible {
+    animation-duration: 0.01s;
+  }
+}
+
+/* ---------- Modal de parroquia ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(10, 8, 7, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: modal-fade 0.15s ease-out;
+}
+.modal {
+  position: relative;
+  width: min(440px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  background: linear-gradient(160deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--red);
+  border-radius: 16px;
+  padding: 24px 24px 22px;
+  box-shadow: 0 24px 60px -20px #000;
+  animation: modal-pop 0.18s ease-out;
+}
+.modal__close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--panel);
+  color: var(--text-dim);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal__close:hover,
+.modal__close:focus-visible {
+  color: var(--text);
+  border-color: var(--red-soft);
+}
+.modal__title {
+  font-family: var(--serif);
+  font-size: 22px;
+  margin: 14px 0 12px;
+  color: var(--text);
+}
+.modal__tons {
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.modal__tons span {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+.modal__sub {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.modal__sub .truck-icon {
+  margin: 0 7px 0 0;
+}
+.modal__info {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+}
+.modal__info dt {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+.modal__info dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+}
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
 }

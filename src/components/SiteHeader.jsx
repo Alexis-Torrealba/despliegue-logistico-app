@@ -1,11 +1,11 @@
-import caritasLogo from "../assets/caritas-logo.png";
+import caritasIsotipo from "../assets/caritas-isotipo.png";
 
 export default function SiteHeader() {
   return (
     <header id="inicio" className="site-header">
       <div className="site-header__inner">
         <a className="brand" href="#inicio">
-          <img className="brand__logo" src={caritasLogo} alt="Logo Cáritas La Guaira" />
+          <img className="brand__logo" src={caritasIsotipo} alt="Isotipo de Cáritas" />
           <span className="brand__name">
             Cáritas La Guaira
             <small>Pastoral Social · Diócesis de La Guaira</small>

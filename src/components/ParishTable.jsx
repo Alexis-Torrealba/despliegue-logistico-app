@@ -1,11 +1,15 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PARISHES, ZONE_COLORS } from "../data/parishes.js";
 import { fmt } from "../utils/format.js";
+import ParishModal from "./ParishModal.jsx";
+import TruckIcon from "./TruckIcon.jsx";
 
 export default function ParishTable({ zoneFilter, setZoneFilter }) {
   const [query, setQuery] = useState("");
   const [sortKey, setSortKey] = useState("tons");
   const [sortDir, setSortDir] = useState("desc");
+  const [selected, setSelected] = useState(null);
+  const closeModal = useCallback(() => setSelected(null), []);
 
   const filtered = useMemo(() => {
     let rows = PARISHES.filter(
@@ -40,7 +44,6 @@ export default function ParishTable({ zoneFilter, setZoneFilter }) {
   return (
     <div id="detalle" className="card">
       <h2>Desglose completo — 26 parroquias</h2>
-      <div className="desc">Filtra por zona o busca una parroquia; ordena por columna</div>
       <div className="zero-legend">
         <span className="sw"></span>
         Zona Cero: parroquias con mayor devastación tras el doblete sísmico
@@ -72,23 +75,41 @@ export default function ParishTable({ zoneFilter, setZoneFilter }) {
           <thead>
             <tr>
               <th onClick={() => toggleSort("name")}>Parroquia {arrow("name")}</th>
-              <th onClick={() => toggleSort("zone")}>Zona {arrow("zone")}</th>
+              <th className="col-desktop" onClick={() => toggleSort("zone")}>
+                Zona {arrow("zone")}
+              </th>
               <th onClick={() => toggleSort("tons")} style={{ textAlign: "right" }}>
                 Toneladas {arrow("tons")}
               </th>
-              <th onClick={() => toggleSort("vehicles")} style={{ textAlign: "right" }}>
+              <th
+                className="col-desktop"
+                onClick={() => toggleSort("vehicles")}
+                style={{ textAlign: "right" }}
+              >
                 Vehículos {arrow("vehicles")}
               </th>
             </tr>
           </thead>
           <tbody>
             {filtered.map((p) => (
-              <tr key={p.name} className={p.zeroZone ? "zero-row" : ""}>
+              <tr
+                key={p.name}
+                className={`parish-row ${p.zeroZone ? "zero-row" : ""}`}
+                tabIndex={0}
+                aria-label={`${p.name}: ver detalle`}
+                onClick={() => setSelected(p)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelected(p);
+                  }
+                }}
+              >
                 <td>
                   {p.name}
                   {p.zeroZone && <span className="zero-tag">Zona Cero</span>}
                 </td>
-                <td>
+                <td className="col-desktop">
                   <span
                     className="zone-pill"
                     style={{
@@ -102,7 +123,10 @@ export default function ParishTable({ zoneFilter, setZoneFilter }) {
                   </span>
                 </td>
                 <td className="num-cell">{fmt(p.tons)} t</td>
-                <td className="num-cell">{p.vehicles}</td>
+                <td className="num-cell col-desktop">
+                  {p.vehicles}
+                  <TruckIcon />
+                </td>
               </tr>
             ))}
             {filtered.length === 0 && (
@@ -115,6 +139,7 @@ export default function ParishTable({ zoneFilter, setZoneFilter }) {
           </tbody>
         </table>
       </div>
+      {selected && <ParishModal parish={selected} onClose={closeModal} />}
     </div>
   );
 }

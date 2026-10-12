@@ -4,6 +4,7 @@ import Header from "./components/Header.jsx";
 import ZoneDistributionCard from "./components/ZoneDistributionCard.jsx";
 import DonorsCard from "./components/DonorsCard.jsx";
 import TopParishesCard from "./components/TopParishesCard.jsx";
+import MapCard from "./components/MapCard.jsx";
 import ParishTable from "./components/ParishTable.jsx";
 import Footer from "./components/Footer.jsx";
 
@@ -23,6 +24,8 @@ export default function App() {
         </div>
 
         <TopParishesCard />
+
+        <MapCard />
 
         <ParishTable zoneFilter={zoneFilter} setZoneFilter={setZoneFilter} />
       </main>
