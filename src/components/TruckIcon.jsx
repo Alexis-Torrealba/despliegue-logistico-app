@@ -1,8 +1,11 @@
-export default function TruckIcon({ variant }) {
+// Por defecto va en línea después de un número, como en la tabla
+const INLINE = "ml-[7px] inline-block h-[17px] w-[17px] align-[-3px] text-white";
+
+export default function TruckIcon({ variant, className = INLINE }) {
   if (variant === "gandola") {
     // Gandola: chuto con remolque largo
     return (
-      <svg className="truck-icon truck-icon--gandola" viewBox="0 0 36 24" aria-hidden="true">
+      <svg className={className} viewBox="0 0 36 24" aria-hidden="true">
         <g fill="currentColor">
           <rect x="1" y="5" width="21" height="11.5" rx="1.2" />
           <rect x="21" y="14.5" width="3" height="2" />
@@ -20,7 +23,7 @@ export default function TruckIcon({ variant }) {
   }
 
   return (
-    <svg className="truck-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
       <path
         fill="currentColor"
         d="M2 6.5A1.5 1.5 0 0 1 3.5 5h10A1.5 1.5 0 0 1 15 6.5V8h3.1a1.5 1.5 0 0 1 1.2.6l2.4 3.2a1.5 1.5 0 0 1 .3.9v3.8a1.5 1.5 0 0 1-1.5 1.5h-.6a2.9 2.9 0 0 1-5.6 0H9.7a2.9 2.9 0 0 1-5.6 0h-.6A1.5 1.5 0 0 1 2 16.5Zm13 3v3h5.1L18 9.5ZM6.9 16.4a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Zm10.3 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4Z"

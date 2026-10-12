@@ -5,7 +5,9 @@ import mapaCentro from "../assets/maps/mapa-zona-centro.svg?raw";
 import mapaCatia from "../assets/maps/mapa-zona-catia-la-mar.svg?raw";
 import mapaMontana from "../assets/maps/mapa-zona-montana.svg?raw";
 import { PARISH_BY_MAP_ID } from "../data/parishes.js";
+import Card from "./Card.jsx";
 import ParishModal from "./ParishModal.jsx";
+import { TABS_ROW, tabClass } from "./tabs.js";
 
 const MAPS = [
   { label: "Mapa completo", svg: mapaCompleto },
@@ -33,7 +35,9 @@ function zoomGeometry(svg, path) {
   const b = path.getBBox();
   const q = svg.createSVGPoint();
   const N = 24;
-  let sx = 0, sy = 0, n = 0;
+  let sx = 0,
+    sy = 0,
+    n = 0;
   for (let i = 0; i < N; i++)
     for (let j = 0; j < N; j++) {
       q.x = b.x + (b.width * (i + 0.5)) / N;
@@ -55,9 +59,12 @@ function zoomGeometry(svg, path) {
 // todos los mapas llenen el mismo marco. Devuelve el recorte como vista base del zoom
 function fitViewBox(svg) {
   const parts = svg.querySelectorAll(
-    '[id$="-parroquias"], [id$="-marcadores"], .etiqueta:not([data-parroquia])'
+    '[id$="-parroquias"], [id$="-marcadores"], .etiqueta:not([data-parroquia])',
   );
-  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  let x0 = Infinity,
+    y0 = Infinity,
+    x1 = -Infinity,
+    y1 = -Infinity;
   parts.forEach((el) => {
     const b = el.getBBox();
     if (!b.width) return;
@@ -67,7 +74,8 @@ function fitViewBox(svg) {
     y1 = Math.max(y1, b.y + b.height);
   });
   const pad = Math.max(x1 - x0, y1 - y0) * 0.03;
-  const w = x1 - x0 + pad * 2, h = y1 - y0 + pad * 2;
+  const w = x1 - x0 + pad * 2,
+    h = y1 - y0 + pad * 2;
   svg.setAttribute("viewBox", `${x0 - pad} ${y0 - pad} ${w} ${h}`);
   // width/height dan la proporción natural que usa el móvil; deben coincidir con el recorte
   svg.setAttribute("width", w);
@@ -76,6 +84,9 @@ function fitViewBox(svg) {
 }
 
 const MAX_ZOOM = 6;
+
+const ZOOM_BUTTON =
+  "h-9 w-9 cursor-pointer rounded-[10px] border border-line bg-[rgba(18,16,14,0.85)] px-1.5 py-px font-sans text-[20px] font-semibold leading-none text-fg disabled:cursor-default disabled:opacity-35";
 
 // Acercar y mover el mapa cambiando su viewBox: botones, pellizco con dos dedos y
 // arrastre con uno. Pensado para móvil, donde el mapa completo queda muy pequeño
@@ -134,7 +145,8 @@ function attachPanZoom(svg, base, onZoomChange) {
       pinch.dist = dist;
       dragged = true;
     } else if (pointers.size === 1 && zoomed) {
-      const p0 = toUser(prev.x, prev.y), p1 = toUser(cur.x, cur.y);
+      const p0 = toUser(prev.x, prev.y),
+        p1 = toUser(cur.x, cur.y);
       view.x -= p1.x - p0.x;
       view.y -= p1.y - p0.y;
       clamp();
@@ -216,7 +228,7 @@ export default function MapCard() {
       [...group.querySelectorAll(".parroquia")]
         .filter((p) => PARISH_BY_MAP_ID[p.dataset.id])
         .map((p) => ({ id: p.dataset.id, nombre: p.dataset.nombre }))
-        .sort((a, b) => a.nombre.localeCompare(b.nombre, "es"))
+        .sort((a, b) => a.nombre.localeCompare(b.nombre, "es")),
     );
 
     const placeTip = (clientX, clientY) => {
@@ -290,26 +302,30 @@ export default function MapCard() {
   }, [active]);
 
   return (
-    <div id="mapa" className="card" style={{ marginBottom: 18 }}>
-      <h2>Mapa de parroquias</h2>
-      <div className="desc">
-        <span className="map-desc-desktop">
-          Pasa el cursor sobre una parroquia y haz clic para ver las toneladas recibidas
-        </span>
-        <span className="map-desc-mobile">
-          Toca una parroquia para ver sus toneladas. Pellizca o usa + para acercar y arrastra
-          para moverte
-        </span>
-      </div>
-
-      <div className="tabs" role="tablist" aria-label="Mapas por zona">
+    <Card
+      id="mapa"
+      className="mb-4.5"
+      title="Mapa de parroquias"
+      desc={
+        <>
+          <span className="mobile:hidden">
+            Pasa el cursor sobre una parroquia y haz clic para ver las toneladas recibidas
+          </span>
+          <span className="hidden mobile:inline">
+            Toca una parroquia para ver sus toneladas. Pellizca o usa + para acercar y arrastra para
+            moverte
+          </span>
+        </>
+      }
+    >
+      <div className={TABS_ROW} role="tablist" aria-label="Mapas por zona">
         {MAPS.map((m) => (
           <button
             key={m.label}
             type="button"
             role="tab"
             aria-selected={active === m.label}
-            className={`tab ${active === m.label ? "active" : ""}`}
+            className={`${tabClass(active === m.label)} leading-[normal]`}
             onClick={() => setActive(m.label)}
           >
             {m.label}
@@ -317,26 +333,44 @@ export default function MapCard() {
         ))}
       </div>
 
-      <div className="map-scroll">
-        <div className={`map-frame ${zoomed ? "zoomed" : ""}`}>
+      <div className="overflow-x-auto rounded-xl border border-line bg-panel-2">
+        {/* map-frame, zoomed, map-svg y map-tip son ganchos para los estilos del SVG en index.css */}
+        <div
+          className={`map-frame relative min-w-[640px] mobile:min-w-0 ${zoomed ? "zoomed" : ""}`}
+        >
           <div
             key={active}
             ref={mapRef}
-            className="map-svg"
+            className="map-svg p-3 mobile:p-1.5"
             dangerouslySetInnerHTML={{ __html: map.svg }}
           />
           <div ref={tipRef} className="map-tip" aria-hidden="true"></div>
         </div>
       </div>
-      <div className="map-zoom" role="group" aria-label="Zoom del mapa">
-        <button type="button" aria-label="Alejar" onClick={() => panZoomRef.current.zoomBy(1 / 1.6)}>
+      <div
+        className="mt-2 hidden justify-end gap-1.5 mobile:flex"
+        role="group"
+        aria-label="Zoom del mapa"
+      >
+        <button
+          type="button"
+          className={ZOOM_BUTTON}
+          aria-label="Alejar"
+          onClick={() => panZoomRef.current.zoomBy(1 / 1.6)}
+        >
           −
         </button>
-        <button type="button" aria-label="Acercar" onClick={() => panZoomRef.current.zoomBy(1.6)}>
+        <button
+          type="button"
+          className={ZOOM_BUTTON}
+          aria-label="Acercar"
+          onClick={() => panZoomRef.current.zoomBy(1.6)}
+        >
           +
         </button>
         <button
           type="button"
+          className={ZOOM_BUTTON}
           aria-label="Ver mapa entero"
           disabled={!zoomed}
           onClick={() => panZoomRef.current.reset()}
@@ -345,12 +379,15 @@ export default function MapCard() {
         </button>
       </div>
       {active !== MAPS[0].label && (
-        <div className="map-chips" aria-label="Parroquias de la zona">
+        <div
+          className="mt-3 hidden flex-wrap gap-1.5 mobile:flex"
+          aria-label="Parroquias de la zona"
+        >
           {chips.map((c) => (
             <button
               key={c.id}
               type="button"
-              className="map-chip"
+              className="cursor-pointer rounded-full border border-line bg-panel-2 px-3 py-[7px] font-sans text-[12.5px] font-semibold leading-[normal] text-fg-dim active:border-caritas active:bg-caritas active:text-white"
               onClick={() => setSelected(PARISH_BY_MAP_ID[c.id])}
             >
               {c.nombre}
@@ -359,6 +396,6 @@ export default function MapCard() {
         </div>
       )}
       {selected && <ParishModal parish={selected} onClose={closeModal} />}
-    </div>
+    </Card>
   );
 }

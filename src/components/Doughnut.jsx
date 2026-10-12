@@ -51,11 +51,11 @@ export default function Doughnut({ labels, data, colors, centerLabel, centerValu
   }, [JSON.stringify(data), JSON.stringify(labels), JSON.stringify(colors)]);
 
   return (
-    <div className="chart-box">
+    <div className="relative h-[200px] w-[200px] shrink-0">
       <canvas ref={canvasRef}></canvas>
-      <div className="chart-center">
-        <div className="val">{centerValue}</div>
-        <div className="lbl">{centerLabel}</div>
+      <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+        <div className="font-serif text-[20px] font-bold">{centerValue}</div>
+        <div className="text-[10.5px] uppercase tracking-[0.06em] text-fg-dim">{centerLabel}</div>
       </div>
     </div>
   );

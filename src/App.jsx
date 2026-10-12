@@ -15,10 +15,13 @@ export default function App() {
     <>
       <SiteHeader />
 
-      <main className="wrap">
+      <main className="mx-auto w-full min-w-0 max-w-[1160px] px-5 pt-8 pb-[60px]">
         <Header zoneFilter={zoneFilter} setZoneFilter={setZoneFilter} />
 
-        <div id="resumen" className="grid">
+        <div
+          id="resumen"
+          className="mb-4.5 grid grid-cols-[1.15fr_0.85fr] gap-4.5 stack:grid-cols-1"
+        >
           <ZoneDistributionCard />
           <DonorsCard />
         </div>

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { ZONE_COLORS } from "../data/parishes.js";
 import { fmt } from "../utils/format.js";
 import TruckIcon from "./TruckIcon.jsx";
+import ZonePill from "./ZonePill.jsx";
 
 export default function ParishModal({ parish, onClose }) {
   const closeRef = useRef(null);
@@ -19,56 +20,58 @@ export default function ParishModal({ parish, onClose }) {
   }, [onClose]);
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-100 grid animate-modal-fade place-items-center bg-[rgba(10,8,7,0.72)] p-4 backdrop-blur-[4px]"
+      onClick={onClose}
+    >
       <div
-        className="modal"
+        className="relative max-h-[calc(100vh-32px)] w-[min(440px,100%)] animate-modal-pop overflow-y-auto rounded-2xl border border-t-4 border-line bg-[linear-gradient(160deg,var(--color-panel-2),var(--color-panel))] px-6 pt-6 pb-[22px] shadow-[0_24px_60px_-20px_#000]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="parish-modal-title"
         onClick={(e) => e.stopPropagation()}
         style={{ borderTopColor: color }}
       >
-        <button ref={closeRef} className="modal__close" onClick={onClose} aria-label="Cerrar">
+        <button
+          ref={closeRef}
+          className="absolute top-2.5 right-3 h-8 w-8 cursor-pointer rounded-full border border-line bg-panel px-1.5 py-px text-[20px] leading-none text-fg-dim hover:border-caritas-soft hover:text-fg focus-visible:border-caritas-soft focus-visible:text-fg"
+          onClick={onClose}
+          aria-label="Cerrar"
+        >
           ×
         </button>
 
-        <span
-          className="zone-pill"
-          style={{
-            background: `${color}1f`,
-            color,
-            border: `1px solid ${color}44`,
-          }}
-        >
-          <span className="d" style={{ background: color }}></span>
-          Zona {parish.zone}
-        </span>
+        <ZonePill zone={parish.zone}>Zona {parish.zone}</ZonePill>
 
-        <h3 id="parish-modal-title" className="modal__title">
+        <h3 id="parish-modal-title" className="mt-3.5 mb-3 font-serif text-[22px] text-fg">
           {parish.name}
         </h3>
 
-        <div className="modal__tons">
+        <div className="font-serif text-[40px] font-bold leading-[1.1] text-fg tabular-nums">
           {fmt(parish.tons)}
-          <span> toneladas</span>
+          <span className="font-sans text-[15px] font-semibold text-fg-dim"> toneladas</span>
         </div>
-        <div className="modal__sub">
-          <TruckIcon />
+        <div className="mt-1.5 text-[13px] text-fg-dim">
+          <TruckIcon className="mr-[7px] inline-block h-[17px] w-[17px] align-[-3px] text-white" />
           {parish.vehicles} vehículos despachados
         </div>
 
         {(parish.priest || parish.address) && (
-          <dl className="modal__info">
+          <dl className="mt-[18px] mb-0 grid gap-3 border-t border-line pt-3.5">
             {parish.priest && (
               <div>
-                <dt>Presbítero</dt>
-                <dd>{parish.priest}</dd>
+                <dt className="mb-0.5 text-[11px] font-bold uppercase tracking-[0.06em] text-fg-dim">
+                  Presbítero
+                </dt>
+                <dd className="m-0 text-[14px] leading-[1.45] text-fg">{parish.priest}</dd>
               </div>
             )}
             {parish.address && (
               <div>
-                <dt>Dirección</dt>
-                <dd>{parish.address}</dd>
+                <dt className="mb-0.5 text-[11px] font-bold uppercase tracking-[0.06em] text-fg-dim">
+                  Dirección
+                </dt>
+                <dd className="m-0 text-[14px] leading-[1.45] text-fg">{parish.address}</dd>
               </div>
             )}
           </dl>
