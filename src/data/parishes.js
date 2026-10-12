@@ -65,13 +65,3 @@ export const ZONES = Object.keys(ZONE_COLORS).map((name) => ({
 export const PARISH_BY_MAP_ID = Object.fromEntries(
   PARISHES.filter((p) => p.mapId).map((p) => [p.mapId, p])
 );
-
-// Vehículos aportados por cada organización
-export const FLEET_SOURCES = [
-  { count: "268", label: "Camiones de Cáritas Nacional" },
-  { count: "110", label: "Gandolas de GEM", icon: "gandola" },
-  { count: "120", label: "Camiones de Empresa Polar" },
-  { count: "45", label: "Camiones de Red de Cáritas Diocesanas" },
-  { count: "5", label: "Camiones de Coromoto 2020" },
-  { count: "+58", label: "Camiones de otras donaciones" },
-];

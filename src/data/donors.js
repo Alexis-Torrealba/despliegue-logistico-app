@@ -8,3 +8,13 @@ export const DONORS = [
 ];
 
 export const DONOR_COLORS = ["#c4513f", "#d49a3a", "#4f9ea3", "#93a152", "#e3a898", "#9c8f82"];
+
+// Vehículos aportados por cada donante (mismo orden y colores que DONORS)
+export const FLEET_SOURCES = [
+  { donor: "Cáritas Nacional", count: "268" },
+  { donor: "GEM", count: "110", icon: "gandola" },
+  { donor: "Empresa Polar", count: "120" },
+  { donor: "Red de Cáritas Diocesanas", count: "45" },
+  { donor: "Coromoto 2020", count: "5" },
+  { donor: "Otras donaciones", count: "+58" },
+];

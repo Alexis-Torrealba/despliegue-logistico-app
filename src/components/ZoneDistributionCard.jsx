@@ -1,7 +1,8 @@
 import Card from "./Card.jsx";
 import Doughnut from "./Doughnut.jsx";
 import { Legend, LegendItem } from "./Legend.jsx";
-import { FLEET_SOURCES, TOTAL_TONS, TOTAL_VEHICLES, ZONES } from "../data/parishes.js";
+import { DONORS, DONOR_COLORS, FLEET_SOURCES } from "../data/donors.js";
+import { TOTAL_TONS, TOTAL_VEHICLES, ZONES } from "../data/parishes.js";
 import TruckIcon from "./TruckIcon.jsx";
 import { fmt } from "../utils/format.js";
 
@@ -44,15 +45,25 @@ export default function ZoneDistributionCard() {
           <b className="text-fg">{TOTAL_VEHICLES}</b> vehículos desplegados
         </span>
       </div>
-      <ul className="mt-3 mb-0 flex list-none flex-col gap-2 p-0 text-[13.5px] text-fg-dim">
+      <Legend className="mt-3">
         {FLEET_SOURCES.map((f) => (
-          <li key={f.label} className="flex items-center gap-2.5">
-            <TruckIcon variant={f.icon} className="h-[18px] w-[26px] shrink-0 text-white" />
-            <b className="min-w-[2.6em] text-right text-fg tabular-nums">{f.count}</b>
-            <span>{f.label}</span>
-          </li>
+          <LegendItem
+            key={f.donor}
+            color={DONOR_COLORS[DONORS.findIndex((d) => d.name === f.donor)]}
+            value={
+              <>
+                {f.count}
+                <TruckIcon
+                  variant={f.icon}
+                  className="ml-2 inline-block h-[15px] w-[22px] align-[-3px] text-white"
+                />
+              </>
+            }
+          >
+            {f.donor}
+          </LegendItem>
         ))}
-      </ul>
+      </Legend>
     </Card>
   );
 }
