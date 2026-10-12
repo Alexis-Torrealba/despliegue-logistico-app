@@ -34,11 +34,18 @@ export default function ParishModal({ parish, onClose }) {
       >
         <button
           ref={closeRef}
-          className="absolute top-2.5 right-3 h-8 w-8 cursor-pointer rounded-full border border-line bg-panel px-1.5 py-px text-[20px] leading-none text-fg-dim hover:border-caritas-soft hover:text-fg focus-visible:border-caritas-soft focus-visible:text-fg"
+          className="absolute top-2.5 right-3 grid h-8 w-8 cursor-pointer place-items-center rounded-full border border-line bg-panel p-0 text-fg-dim hover:border-caritas-soft hover:text-fg focus-visible:border-caritas-soft focus-visible:text-fg"
           onClick={onClose}
           aria-label="Cerrar"
         >
-          ×
+          <svg className="h-3 w-3" viewBox="0 0 12 12" aria-hidden="true">
+            <path
+              d="M1.5 1.5l9 9m0-9l-9 9"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
         </button>
 
         <ZonePill zone={parish.zone}>Zona {parish.zone}</ZonePill>
