@@ -15,23 +15,29 @@
   --color-line: #3a322c;
   --color-fg: #f3efe8;
   --color-fg-dim: #b3a99d;
-  --color-map-highlight: #2f80ed;
+  /* Claro y cálido: se distingue de los cuatro colores de zona sin salirse de la paleta */
+  --color-map-highlight: #f3e6cf;
 
-  --font-sans: "Segoe UI", system-ui, Roboto, sans-serif;
-  --font-serif: Georgia, "Times New Roman", serif;
+  /* Geist para todo; las cifras usan sus dígitos tabulares (tabular-nums) */
+  --font-sans: "Geist", system-ui, "Segoe UI", Roboto, sans-serif;
 
-  --animate-modal-fade: modal-fade 0.15s ease-out;
-  --animate-modal-pop: modal-pop 0.18s ease-out;
+  /* Curvas de movimiento: reemplazan las de Tailwind, así ease-out y ease-in-out en
+     cualquier clase usan la versión fuerte (las nativas se sienten flojas en UI) */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  /* Más larga y suave al final: para lo que se presenta una vez (cifras, barras, donas) */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
-  @keyframes modal-fade {
+  /* Entrada de la cabecera al abrir la página: sube 8px y aparece. Se escalona por
+     elemento con animation-delay */
+  /* backwards: oculto durante el retraso, y sin efecto al terminar (no deja capas que
+     tapen la lista del buscador) */
+  --animate-enter: enter 300ms var(--ease-out) backwards;
+
+  @keyframes enter {
     from {
       opacity: 0;
-    }
-  }
-  @keyframes modal-pop {
-    from {
-      opacity: 0;
-      transform: translateY(8px) scale(0.97);
+      translate: 0 8px;
     }
   }
 }
@@ -51,17 +57,16 @@
   html {
     scroll-padding-top: env(safe-area-inset-top, 0px);
     scroll-behavior: smooth;
+    /* Reserva el espacio de la barra de scroll: abrir el modal (que bloquea el scroll)
+       no desplaza la página hacia los lados */
+    scrollbar-gutter: stable;
   }
   [id] {
     scroll-margin-top: calc(70px + env(safe-area-inset-top, 0px));
   }
 
   body {
-    background:
-      radial-gradient(1100px 520px at 0% 0%, rgba(138, 49, 37, 0.16), transparent 60%),
-      radial-gradient(900px 480px at 100% 30%, rgba(183, 121, 31, 0.07), transparent 60%),
-      var(--color-page);
-    background-attachment: fixed;
+    background: var(--color-page);
     color: var(--color-fg);
     font: 16px/1.5 var(--font-sans);
     min-height: 100%;
@@ -69,17 +74,50 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Resplandor cálido fijo detrás de la página. Va en una capa aparte porque
+     background-attachment: fixed se ignora o salta al desplazarse en iOS */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(1100px 520px at 0% 0%, rgba(138, 49, 37, 0.16), transparent 60%),
+      radial-gradient(900px 480px at 100% 30%, rgba(183, 121, 31, 0.07), transparent 60%);
+  }
+
   #root {
-    min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
+  }
+
+  /* Superficies del navegador con la paleta: selección, cursor de texto y barras de scroll */
+  ::selection {
+    background: rgba(217, 119, 106, 0.38);
+    color: var(--color-fg);
+  }
+  input {
+    caret-color: var(--color-caritas-soft);
+  }
+  html {
+    scrollbar-color: var(--color-line) var(--color-page);
+  }
+
+  /* Un solo anillo de foco para todo lo que se usa con teclado */
+  :focus-visible {
+    outline: 2px solid var(--color-caritas-soft);
+    outline-offset: 2px;
   }
 
   h1,
   h2,
   h3 {
-    font-family: var(--font-serif);
-    font-weight: 700;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
     color: var(--color-fg);
   }
 }
@@ -133,6 +171,8 @@
 }
 .map-tip {
   position: absolute;
+  left: 0;
+  top: 0;
   z-index: 2;
   pointer-events: none;
   padding: 5px 10px;
@@ -144,14 +184,19 @@
   font-weight: 600;
   white-space: nowrap;
   transform: translate(-50%, calc(-100% - 14px));
+  transform-origin: 0 0;
   opacity: 0;
-  transition: opacity 0.12s ease;
+  scale: 0.94;
+  transition:
+    opacity 0.12s ease,
+    scale 0.18s var(--ease-out);
 }
 .map-tip.below {
   transform: translate(-50%, 18px);
 }
 .map-tip.visible {
   opacity: 1;
+  scale: 1;
 }
 /* El SVG de Zona Este es más pequeño y sus divisiones se veían el doble de gruesas;
    así quedan en ~1px como en los otros mapas por zona */
@@ -193,5 +238,136 @@
 @media (prefers-reduced-motion: reduce) {
   .map-svg .map-highlight.visible {
     animation-duration: 0.01s;
+  }
+}
+
+/* ---------- Presentación al hacer scroll ----------
+   Cada tarjeta entra una vez, al llegar a pantalla (data-reveal lo pone Card). Dentro,
+   barras y donas se dibujan con un pequeño retraso para que se lean después del marco */
+/* Solo opacidad y desplazamiento: los dos que el navegador anima en la GPU sin
+   volver a pintar la tarjeta */
+[data-reveal] {
+  transition:
+    opacity 700ms var(--ease-out-expo),
+    translate 900ms var(--ease-out-expo);
+}
+[data-reveal="out"] {
+  opacity: 0;
+  translate: 0 24px;
+}
+
+/* Barras: crecen desde la izquierda en cascada (--i es la posición de la fila) */
+.bar-fill {
+  transform-origin: left center;
+  transition: transform 1100ms var(--ease-out-expo);
+  transition-delay: calc(180ms + var(--i, 0) * 70ms);
+}
+[data-reveal="out"] .bar-fill {
+  transform: scaleX(0);
+}
+
+/* Listas de barras: al pasar por una fila, las demás se apagan para compararla */
+@media (hover: hover) and (pointer: fine) {
+  .bar-list > li,
+  .bar-list > div {
+    transition: opacity 200ms ease;
+  }
+  .bar-list:has(> :hover) > :not(:hover) {
+    opacity: 0.42;
+  }
+}
+
+/* Contador: cada tira de dígitos rueda hasta su posición */
+.odo-strip {
+  transition-property: transform;
+  transition-timing-function: var(--ease-out-expo);
+}
+
+/* Barra de avance de lectura bajo la navegación. Va ligada al scroll en el hilo del
+   compositor; donde no hay scroll-driven animations simplemente no aparece */
+.read-progress {
+  display: none;
+}
+@supports (animation-timeline: scroll()) {
+  .read-progress {
+    display: block;
+    transform-origin: left center;
+    animation: read-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+  @keyframes read-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+/* Cambio de mapa: el nuevo se funde y se asienta (sin blur: desenfocar un SVG grande
+   cuesta un redibujado por cuadro en equipos modestos) */
+@keyframes map-in {
+  from {
+    opacity: 0;
+    scale: 0.985;
+  }
+}
+.map-enter {
+  animation: map-in 420ms var(--ease-out-expo) backwards;
+}
+/* Cortina del barrido: tapa el mapa con el color del marco y se retira hacia la derecha.
+   Arranca 160px a la izquierda con un degradado, que es el borde suave del barrido */
+.map-wipe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -160px;
+  width: calc(100% + 160px);
+  background: linear-gradient(90deg, transparent, var(--color-panel-2) 160px);
+}
+
+/* Contenido del modal: entra en cascada detrás del panel */
+.modal-stagger > * {
+  animation: enter 420ms var(--ease-out-expo) backwards;
+  animation-delay: calc(60ms + var(--i, 0) * 45ms);
+}
+
+/* ---------- Movimiento reducido ----------
+   Menos y más suave, no cero: se conservan los fundidos de opacidad (ayudan a entender
+   qué apareció o desapareció) y se quitan escalas y desplazamientos */
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-enter,
+  .modal-stagger > *,
+  .map-enter {
+    animation-name: enter-fade;
+  }
+  /* Las cifras y barras aparecen ya en su valor; el marco solo se funde */
+  .odo-strip,
+  .bar-fill,
+  .flip-row {
+    transition: none !important;
+  }
+  [data-reveal="out"] {
+    translate: none;
+  }
+  .map-wipe {
+    display: none;
+  }
+  .bar-list > * {
+    transition: none;
+  }
+  [data-motion],
+  :active {
+    scale: none !important;
+    translate: none !important;
   }
 }

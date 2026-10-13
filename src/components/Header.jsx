@@ -1,100 +1,79 @@
-import { TOTAL_TONS, TOTAL_VEHICLES, ZONES } from "../data/parishes.js";
-import { fmt } from "../utils/format.js";
+import { PARISHES, TOTAL_TONS, TOTAL_VEHICLES } from "../data/parishes.js";
+import { fmtPct } from "../utils/format.js";
+import ParishFinder from "./ParishFinder.jsx";
+import Odometer from "./Odometer.jsx";
 
-function Kpi({ value, label, accent }) {
+// Se calcula desde los datos para que la frase siga siendo cierta al actualizar cifras
+const ZERO_ZONE = PARISHES.filter((p) => p.zeroZone);
+const zeroZoneTons = ZERO_ZONE.reduce((s, p) => s + p.tons, 0);
+const zeroZoneAreas = new Intl.ListFormat("es", { type: "conjunction" }).format([
+  ...new Set(ZERO_ZONE.map((p) => p.zone)),
+]);
+
+// Atendida = recibió algo; si una parroquia llega a 0 t, el KPI lo refleja solo
+const SERVED = PARISHES.filter((p) => p.tons > 0);
+
+// Cifra en Geist con dígitos tabulares: en monoespaciada el punto de miles y la unidad
+// ocupaban el ancho de un dígito y la cifra se veía separada ("9 . 823 t")
+const FIGURE = "font-semibold leading-none tracking-[-0.04em] tabular-nums";
+
+export default function Header({ onSelectParish }) {
   return (
-    <div
-      className={`rounded-[14px] border border-t-[3px] px-[18px] py-4 ${
-        accent
-          ? "border-caritas bg-[linear-gradient(160deg,var(--color-caritas),var(--color-caritas-dark))]"
-          : "border-line border-t-caritas bg-[linear-gradient(160deg,var(--color-panel-2),var(--color-panel))]"
-      }`}
-    >
-      <div className={`font-serif text-[26px] font-bold ${accent ? "text-white" : "text-fg"}`}>
-        {value}
+    // Al abrir la página, título, texto, buscador y cifras entran en cascada (50ms entre
+    // cada uno). Es la única entrada animada: la página se visita pocas veces y el resto
+    // son datos que no deben moverse mientras se leen
+    <header className="mb-6 flex flex-wrap items-start justify-between gap-6">
+      <div className="min-w-0 flex-1 basis-[420px]">
+        <h1
+          data-motion
+          className="mt-0 mb-2.5 animate-enter text-[length:clamp(30px,4.4vw,46px)] leading-[1.05] tracking-[-0.035em]"
+        >
+          Despliegue Logístico
+          <br />
+          Post-Terremoto
+        </h1>
+        <p
+          data-motion
+          className="m-0 max-w-[560px] animate-enter text-[16px] text-fg-dim [animation-delay:50ms]"
+        >
+          Cobertura total en las {PARISHES.length} parroquias del estado La Guaira. Las{" "}
+          {ZERO_ZONE.length} parroquias de Zona Cero, en las zonas {zeroZoneAreas}, recibieron el{" "}
+          {fmtPct(zeroZoneTons / TOTAL_TONS)} del volumen.
+        </p>
+        <div data-motion className="animate-enter [animation-delay:100ms]">
+          <ParishFinder onSelect={onSelectParish} />
+        </div>
       </div>
-      <div
-        className={`mt-1 text-[11.5px] font-semibold uppercase tracking-[0.08em] ${
-          accent ? "text-white" : "text-fg-dim"
-        }`}
+
+      {/* El volumen manda; vehículos y parroquias lo acompañan debajo */}
+      <dl
+        data-motion
+        className="m-0 grid min-w-[320px] animate-enter grid-cols-2 content-start gap-3 [animation-delay:150ms] tiny:w-full tiny:min-w-0"
       >
-        {label}
-      </div>
-    </div>
+        <div className="col-span-2 rounded-lg bg-caritas px-6 py-5 text-center">
+          {/* Sin etiqueta visible: la unidad "toneladas" ya dice qué es la cifra */}
+          <dt className="sr-only">Volumen total entregado</dt>
+          <dd className={`m-0 text-white ${FIGURE} text-[length:clamp(44px,5vw,56px)]`}>
+            <Odometer value={TOTAL_TONS} />
+            <span className="ml-1.5 text-[0.45em] font-medium tracking-normal text-[#ffffffcc]">
+              toneladas
+            </span>
+          </dd>
+        </div>
+        <SmallKpi value={TOTAL_VEHICLES} label="Vehículos despachados" />
+        <SmallKpi value={SERVED.length} label="Parroquias atendidas" />
+      </dl>
+    </header>
   );
 }
 
-const navLink =
-  "inline-flex shrink-0 cursor-pointer items-center gap-[7px] whitespace-nowrap rounded-full border border-line bg-panel-2 px-[13px] py-[7px] text-[12.5px] font-semibold no-underline transition-all duration-150 ease-[ease]";
-const navIdle = "text-fg-dim hover:border-caritas-soft hover:text-fg";
-
-export default function Header({ zoneFilter, setZoneFilter }) {
+function SmallKpi({ value, label }) {
   return (
-    <>
-      <header className="mb-6 flex flex-wrap items-start justify-between gap-6">
-        <div>
-          <div className="mb-2.5 inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.14em] text-caritas-soft">
-            <span className="h-[7px] w-[7px] rounded-full bg-caritas-soft shadow-[0_0_10px_var(--color-caritas-soft)]"></span>
-            La Guaira · Respuesta Humanitaria
-          </div>
-          <h1 className="mt-0 mb-2.5 text-[length:clamp(28px,4vw,42px)] leading-[1.15]">
-            Despliegue Logístico
-            <br />
-            Post-Terremoto
-          </h1>
-          <p className="m-0 max-w-[560px] text-[16px] text-fg-dim">
-            Cobertura total en las 26 parroquias del estado La Guaira, con prioridad operacional en
-            las Zonas Cero (Este y Catia La Mar).
-          </p>
-        </div>
-        <div className="grid min-w-[320px] grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3.5 tiny:w-full tiny:min-w-0">
-          <Kpi accent value={`${fmt(TOTAL_TONS)} t`} label="Volumen total" />
-          <Kpi value="26" label="Parroquias" />
-          <Kpi value={TOTAL_VEHICLES} label="Vehículos" />
-          <Kpi value="100%" label="Cobertura" />
-        </div>
-      </header>
-
-      <nav
-        className="sticky top-[env(safe-area-inset-top,0px)] z-40 mb-[26px] flex items-center gap-2 overflow-x-auto rounded-[14px] border border-line bg-[rgba(18,16,14,0.82)] px-2.5 py-[9px] backdrop-blur-[10px] [&::-webkit-scrollbar]:hidden"
-        aria-label="Navegación por zonas"
-      >
-        <span className="shrink-0 pr-1.5 pl-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-fg-dim">
-          Ir a:
-        </span>
-        <a
-          className={`${navLink} ${navIdle}`}
-          href="#resumen"
-          onClick={() => setZoneFilter("Todas")}
-        >
-          Resumen
-        </a>
-        <a className={`${navLink} ${navIdle}`} href="#donantes">
-          Donantes
-        </a>
-        <a className={`${navLink} ${navIdle}`} href="#top">
-          Top parroquias
-        </a>
-        <span className="mx-0.5 h-5 w-px shrink-0 bg-line"></span>
-        {ZONES.map((z) => {
-          const on = zoneFilter === z.name;
-          return (
-            <a
-              key={z.name}
-              href="#detalle"
-              className={`${navLink} ${on ? "text-white" : navIdle}`}
-              style={on ? { background: z.color, borderColor: z.color } : {}}
-              onClick={() => setZoneFilter(z.name)}
-            >
-              <span
-                className="h-[7px] w-[7px] shrink-0 rounded-full"
-                style={{ background: on ? "rgba(255,255,255,0.75)" : z.color }}
-              ></span>
-              {z.name}
-            </a>
-          );
-        })}
-      </nav>
-    </>
+    <div className="flex flex-col-reverse justify-end rounded-lg border border-line bg-panel px-5 py-4">
+      <dt className="mt-1.5 text-[13px] text-fg-dim">{label}</dt>
+      <dd className={`m-0 text-[30px] text-fg ${FIGURE}`}>
+        <Odometer value={value} />
+      </dd>
+    </div>
   );
 }

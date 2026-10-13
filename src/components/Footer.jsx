@@ -1,6 +1,7 @@
-import caritasLogo from "../assets/caritas-logo.png";
+// WebP a 2× del tamaño mostrado: ~13 KB en vez de los 150 KB del PNG original
+import caritasLogo from "../assets/caritas-logo.webp";
 
-const label = "text-[0.72rem] font-bold uppercase tracking-[0.06em] text-[#ffffff80]";
+const label = "text-[0.8rem] font-medium text-[#ffffff80]";
 const link = "text-white no-underline hover:text-caritas-soft";
 
 export default function Footer() {
@@ -11,6 +12,10 @@ export default function Footer() {
           <img
             className="h-[4.5rem] w-auto rounded-[10px] bg-white p-1.5"
             src={caritasLogo}
+            width="146"
+            height="162"
+            loading="lazy"
+            decoding="async"
             alt="Logo Cáritas La Guaira"
           />
           <div className="min-w-[240px] max-w-[660px] flex-1">
