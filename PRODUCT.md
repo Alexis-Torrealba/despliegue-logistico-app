@@ -35,7 +35,7 @@ El detalle llega hasta cada una de las 26 parroquias de la diócesis: toneladas,
 ## Brand Commitments
 
 - Nombre e identidad: Cáritas La Guaira, Pastoral Social de la Diócesis de La Guaira.
-- Activos: `src/assets/caritas-logo.webp` y `src/assets/caritas-isotipo.webp`, en uso, reducidos a 2× su tamaño en pantalla. Los originales en PNG (`caritas-logo.png`, `caritas-isotipo.png`) siguen en `src/assets/` como fuente de alta resolución.
+- Activos: `src/assets/caritas-logo.webp` y `src/assets/caritas-isotipo.webp`, en uso, reducidos a 2× su tamaño en pantalla. Los PNG originales de alta resolución se retiraron del repositorio; quedan en el historial de git.
 - Contacto oficial publicado en el footer: dirección en Macuto, teléfono, correo e Instagram @caritaslg.
 
 ## Evidence on Hand

@@ -1,6 +1,6 @@
 # Despliegue Logístico Post-Terremoto — Dashboard
 
-Dashboard interactivo (React + Vite + Chart.js) para visualizar el despliegue logístico
+Dashboard interactivo (React + Vite + Tailwind CSS) para visualizar el despliegue logístico
 post-terremoto en el estado La Guaira: distribución por zona, fuentes de donación,
 ranking de parroquias y tabla filtrable/ordenable.
 
@@ -58,17 +58,29 @@ npm run preview
 │   ├── index.css                # Tema oscuro global
 │   ├── data/
 │   │   ├── parishes.js          # 26 parroquias, zonas y totales
-│   │   └── donors.js            # Fuentes de donación
+│   │   ├── donors.js            # Fuentes de donación
+│   │   └── directory.js         # Presbíteros y direcciones de cada parroquia
 │   ├── utils/
-│   │   └── format.js            # Formato numérico (es-VE)
+│   │   └── format.js            # Formato numérico (es-VE) y búsqueda sin acentos
+│   ├── hooks/
+│   │   ├── useInView.js         # Animar una vez al entrar en pantalla
+│   │   └── useClipIndicator.js  # Indicador deslizante de pestañas
 │   ├── assets/
-│   │   └── caritas-logo.png     # Logo de Cáritas La Guaira
+│   │   ├── caritas-logo.webp    # Logo de Cáritas La Guaira (footer)
+│   │   ├── caritas-isotipo.webp # Isotipo (cabecera)
+│   │   └── maps/                # Mapas SVG del estado y de cada zona
 │   └── components/
-│       ├── Header.jsx           # Encabezado, KPIs y menú de anclas por zona
-│       ├── Doughnut.jsx         # Gráfica de torta reutilizable (Chart.js)
+│       ├── SiteHeader.jsx       # Identidad de Cáritas
+│       ├── Header.jsx           # Título, KPIs y buscador de parroquias
+│       ├── ParishFinder.jsx     # Buscador "Busca tu parroquia"
+│       ├── SectionNav.jsx       # Navegación fija por secciones
+│       ├── Donut.jsx            # Gráfica de dona en SVG
+│       ├── Odometer.jsx         # Cifras que ruedan hasta su valor
 │       ├── ZoneDistributionCard.jsx
 │       ├── DonorsCard.jsx
 │       ├── TopParishesCard.jsx
+│       ├── MapCard.jsx          # Mapa interactivo con zoom
+│       ├── ParishModal.jsx      # Detalle de cada parroquia
 │       ├── ParishTable.jsx      # Tabla filtrable, buscable y ordenable
 │       └── Footer.jsx
 ```
