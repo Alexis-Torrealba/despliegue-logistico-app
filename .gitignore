@@ -8,3 +8,10 @@ Datos.docx
 
 # Archivos temporales de Office mientras un documento está abierto
 ~$*
+
+# Configuración local de asistentes de IA
+.agents/
+.claude/
+.codex/
+.impeccable/
+skills-lock.json
