@@ -26,16 +26,16 @@ El detalle llega hasta cada una de las 26 parroquias de la diócesis: toneladas,
 
 ## Capabilities and Constraints
 
-- Stack existente: React 18, Vite 5, Tailwind CSS v4 y Chart.js.
+- Stack existente: React 18, Vite 5 y Tailwind CSS v4. Sin librería de gráficos: la dona y las barras son SVG y CSS propios.
 - Contenido en español (formato numérico `es-VE`).
-- Funciones actuales: KPIs generales, distribución por zona, fuentes de donación y flota por donante, ranking de parroquias, mapa interactivo por zona con zoom y modal por parroquia, y tabla filtrable, buscable y ordenable.
+- Funciones actuales: KPIs generales, distribución por zona, fuentes de donación y flota por donante, ranking de parroquias, buscador de parroquias en la cabecera, navegación fija por secciones, mapa interactivo por zona con zoom, modal por parroquia con enlace propio (`#parroquia/<id>`) que indica si es Zona Cero, y tabla filtrable, buscable y ordenable.
 - Terminología del dominio: zonas Este, Centro, Catia La Mar y Montaña; "Zona Cero" son las parroquias con mayor devastación tras el doblete sísmico; toneladas (t); camiones y gandolas.
 - Pendiente de decidir: cómo se actualizarán los datos (edición manual, hoja de cálculo, backend o CMS) y si cada actualización mostrará su fecha de corte.
 
 ## Brand Commitments
 
 - Nombre e identidad: Cáritas La Guaira, Pastoral Social de la Diócesis de La Guaira.
-- Activos: `src/assets/caritas-logo.png` y `src/assets/caritas-isotipo.png`.
+- Activos: `src/assets/caritas-logo.webp` y `src/assets/caritas-isotipo.webp`, en uso, reducidos a 2× su tamaño en pantalla. Los originales en PNG (`caritas-logo.png`, `caritas-isotipo.png`) siguen en `src/assets/` como fuente de alta resolución.
 - Contacto oficial publicado en el footer: dirección en Macuto, teléfono, correo e Instagram @caritaslg.
 
 ## Evidence on Hand
