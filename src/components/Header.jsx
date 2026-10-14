@@ -13,9 +13,9 @@ const zeroZoneAreas = new Intl.ListFormat("es", { type: "conjunction" }).format(
 // Atendida = recibió algo; si una parroquia llega a 0 t, el KPI lo refleja solo
 const SERVED = PARISHES.filter((p) => p.tons > 0);
 
-// Cifra en Geist con dígitos tabulares: en monoespaciada el punto de miles y la unidad
+// Cifra en Ubuntu con dígitos tabulares: en monoespaciada el punto de miles y la unidad
 // ocupaban el ancho de un dígito y la cifra se veía separada ("9 . 823 t")
-const FIGURE = "font-semibold leading-none tracking-[-0.04em] tabular-nums";
+const FIGURE = "font-display font-bold leading-none tracking-[-0.02em] lining-nums tabular-nums";
 
 export default function Header({ onSelectParish }) {
   return (
@@ -55,7 +55,7 @@ export default function Header({ onSelectParish }) {
           <dt className="sr-only">Volumen total entregado</dt>
           <dd className={`m-0 text-white ${FIGURE} text-[length:clamp(44px,5vw,56px)]`}>
             <Odometer value={TOTAL_TONS} />
-            <span className="ml-1.5 text-[0.45em] font-medium tracking-normal text-[#ffffffcc]">
+            <span className="ml-1.5 font-sans text-[0.45em] font-medium tracking-normal text-[#ffffffcc]">
               toneladas
             </span>
           </dd>

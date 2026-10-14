@@ -88,7 +88,7 @@ export default function Donut({
         </g>
       </svg>
       <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-[24px] font-semibold leading-none tracking-[-0.04em] tabular-nums">
+        <div className="font-display font-bold text-[26px] leading-none tracking-[-0.02em] lining-nums tabular-nums">
           <Odometer value={current ? current.value : centerValue} active={revealed} />
         </div>
         {/* La etiqueta cambia con un fundido corto; la clave reinicia la entrada */}

@@ -15,9 +15,9 @@ export default function SiteHeader() {
             fetchPriority="high"
             alt="Isotipo de Cáritas"
           />
-          <span className="text-[1.4rem] font-semibold leading-[1.1] tracking-[-0.02em] mobile:text-[1.15rem]">
+          <span className="font-display font-bold text-[1.5rem] leading-[1.1] tracking-[-0.01em] mobile:text-[1.25rem]">
             Cáritas La Guaira
-            <small className="mt-1 block text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[#ffffffb3]">
+            <small className="mt-1 block font-sans text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-[#ffffffb3]">
               Pastoral Social · Diócesis de La Guaira
             </small>
           </span>

@@ -18,8 +18,10 @@
   /* Claro y cálido: se distingue de los cuatro colores de zona sin salirse de la paleta */
   --color-map-highlight: #f3e6cf;
 
-  /* Geist para todo; las cifras usan sus dígitos tabulares (tabular-nums) */
-  --font-sans: "Geist", system-ui, "Segoe UI", Roboto, sans-serif;
+  /* Rokkitt para párrafos, subtítulos y etiquetas. Ubuntu (font-display) para
+     títulos y cifras destacadas; las cifras usan dígitos tabulares (tabular-nums) */
+  --font-sans: "Rokkitt", Rockwell, Georgia, serif;
+  --font-display: "Ubuntu", system-ui, "Segoe UI", Roboto, sans-serif;
 
   /* Curvas de movimiento: reemplazan las de Tailwind, así ease-out y ease-in-out en
      cualquier clase usan la versión fuerte (las nativas se sienten flojas en UI) */
@@ -69,6 +71,9 @@
     background: var(--color-page);
     color: var(--color-fg);
     font: 16px/1.5 var(--font-sans);
+    /* Rokkitt tiene la x muy baja (0,40 del cuerpo, frente a ~0,50 de una sans
+       normal): sin esto, todo el texto se ve un 20 % más chico que su font-size */
+    font-size-adjust: 0.48;
     min-height: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -111,12 +116,24 @@
     outline-offset: 2px;
   }
 
+  /* Los títulos y cifras van en Ubuntu, que ya trae su propia proporción; lo que
+     vuelve a font-sans dentro de ellos (unidades, subtítulos) recupera el ajuste */
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-size-adjust: none;
+  }
+  .font-sans {
+    font-size-adjust: 0.48;
+  }
+
   h1,
   h2,
   h3 {
-    font-family: var(--font-sans);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
     text-wrap: balance;
     color: var(--color-fg);
   }

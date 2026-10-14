@@ -119,11 +119,11 @@ export default function ParishModal({ parish, onClose }) {
         )}
 
         <div
-          className="text-[44px] font-semibold leading-[1.05] tracking-[-0.04em] text-fg tabular-nums"
+          className="font-display font-bold text-[44px] leading-[1.05] tracking-[-0.02em] text-fg lining-nums tabular-nums"
           style={{ "--i": 3 }}
         >
           {fmt(parish.tons)}
-          <span className="ml-1.5 text-[15px] font-medium tracking-normal text-fg-dim">
+          <span className="ml-1.5 font-sans text-[15px] font-medium tracking-normal text-fg-dim">
             toneladas
           </span>
         </div>
